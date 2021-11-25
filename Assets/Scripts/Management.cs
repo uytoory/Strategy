@@ -11,8 +11,8 @@ public enum SelectionState{
 public class Management : MonoBehaviour
 {
     [SerializeField] Camera _camera;
-    [SerializeField] SelectableObject _hovered;
-    [SerializeField] List<SelectableObject> _ListOfSelected = new List<SelectableObject>();
+    public SelectableObject Hovered;
+    public List<SelectableObject> ListOfSelected = new List<SelectableObject>();
 
     [SerializeField] Image _frameImage;
     private Vector2 _frameStart;
@@ -31,15 +31,15 @@ public class Management : MonoBehaviour
         if (Physics.Raycast(ray, out hit)){
             if (hit.collider.GetComponent<SelectableCollider>()){
                 SelectableObject hitSelectable = hit.collider.GetComponent<SelectableCollider>().SelectableObject;
-                if (_hovered){
-                    if (_hovered != hitSelectable){
-                        _hovered.OnUnHover();
-                        _hovered = hitSelectable;
-                        _hovered.OnHover();
+                if (Hovered){
+                    if (Hovered != hitSelectable){
+                        Hovered.OnUnHover();
+                        Hovered = hitSelectable;
+                        Hovered.OnHover();
                     } 
                 }else{
-                    _hovered = hitSelectable;
-                    _hovered.OnHover();
+                    Hovered = hitSelectable;
+                    Hovered.OnHover();
                 }
             }else
             {
@@ -50,14 +50,14 @@ public class Management : MonoBehaviour
         }
 
         if (Input.GetMouseButtonUp(0)) {
-            if (_hovered)
+            if (Hovered)
             {
                 if (Input.GetKey(KeyCode.LeftControl) == false)
                 {
                     UnSelectAll();
                 }
                 CurrentSelectionState = SelectionState.UnitsSelected;
-                Select(_hovered);
+                Select(Hovered);
             }
         }
 
@@ -67,13 +67,18 @@ public class Management : MonoBehaviour
             {
                 if (hit.collider.tag == "Ground")
                 {
-                    for (int i = 0; i < _ListOfSelected.Count; i++)
+                    int rowNumber = Mathf.CeilToInt(Mathf.Sqrt(ListOfSelected.Count));
+
+                    for (int i = 0; i < ListOfSelected.Count; i++)
                     {
-                        _ListOfSelected[i].WhenClickOnGround(hit.point);
+                        int row = i / rowNumber;
+                        int column = i % rowNumber;
+
+                        Vector3 point = hit.point + new Vector3(row, 0f, column);
+                        ListOfSelected[i].WhenClickOnGround(point);
                     }
                 }
             }
-
         }
 
         if (Input.GetMouseButtonDown(1))
@@ -121,7 +126,7 @@ public class Management : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             _frameImage.enabled = false;
-            if(_ListOfSelected.Count > 0)
+            if(ListOfSelected.Count > 0)
             {
                 CurrentSelectionState = SelectionState.UnitsSelected;
             }
@@ -135,30 +140,38 @@ public class Management : MonoBehaviour
 
     void Select(SelectableObject selectableObject)
     {
-        if (_ListOfSelected.Contains(selectableObject) == false)
+        if (ListOfSelected.Contains(selectableObject) == false)
         {
-            _ListOfSelected.Add(selectableObject);
+            ListOfSelected.Add(selectableObject);
             selectableObject.Select();
+        }
+    }
+
+    public void Unselect(SelectableObject selectableObject)
+    {
+        if(ListOfSelected.Contains(selectableObject))
+        {
+            ListOfSelected.Remove(selectableObject);
         }
     }
 
 
     void UnSelectAll()
     {
-        for (int i = 0; i < _ListOfSelected.Count; i++)
+        for (int i = 0; i < ListOfSelected.Count; i++)
         {
-            _ListOfSelected[i].UnSelect();
+            ListOfSelected[i].UnSelect();
         }
-        _ListOfSelected.Clear();
+        ListOfSelected.Clear();
         CurrentSelectionState = SelectionState.Other;
     }
 
     void UnHoverCurrent()
     {
-        if (_hovered)
+        if (Hovered)
         {
-            _hovered.OnUnHover();
-            _hovered = null;
+            Hovered.OnUnHover();
+            Hovered = null;
         }
     }
 }

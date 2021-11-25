@@ -326,11 +326,15 @@
 "Assets/Scripts/Building/Mine.cs"
 "Assets/Scripts/Building/Resources.cs"
 "Assets/Scripts/CameraMove.cs"
+"Assets/Scripts/Enemy.cs"
+"Assets/Scripts/EnemyCreator.cs"
+"Assets/Scripts/HealthBar.cs"
 "Assets/Scripts/Knight.cs"
 "Assets/Scripts/Management.cs"
 "Assets/Scripts/SelectableCollider.cs"
 "Assets/Scripts/SelectableObject.cs"
 "Assets/Scripts/Unit.cs"
+"Assets/Scripts/UnitButton.cs"
 -langversion:8.0
 
 /deterministic
